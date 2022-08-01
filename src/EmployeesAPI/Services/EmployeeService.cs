@@ -13,25 +13,26 @@ namespace EmployeesAPI.Services
             var mongoClient = new MongoClient(
                 employeeOptions.Value.ConnectionString);
 
-            var mongoDatabae = mongoClient.GetDatabase(
+            var mongoDatabase = mongoClient.GetDatabase(
                 employeeOptions.Value.DatabaseName);
 
-            _employeeCollection = mongoDatabae.GetCollection<Employee>(
+            _employeeCollection = mongoDatabase.GetCollection<Employee>(
                 employeeOptions.Value.EmployeesCollectionName);
         }
+
         public async Task<List<Employee>> GetAsync() =>
             await _employeeCollection.Find(_ => true).ToListAsync();
 
-        public async Task<Employee?> GetAsync(int id) =>
+        public async Task<Employee?> GetAsync(string id) =>
             await _employeeCollection.Find(x => x.Id == id).FirstOrDefaultAsync();
 
-        public async Task CreateAsync(Employee newBook) =>
-            await _employeeCollection.InsertOneAsync(newBook);
+        public async Task CreateAsync(Employee newEmployee) =>
+            await _employeeCollection.InsertOneAsync(newEmployee);
 
-        public async Task UpdateAsync(int id, Employee updateEmployee) =>
+        public async Task UpdateAsync(string id, Employee updateEmployee) =>
             await _employeeCollection.ReplaceOneAsync(x => x.Id == id, updateEmployee);
 
-        public async Task RemoveAsync(int id) =>
+        public async Task RemoveAsync(string id) =>
             await _employeeCollection.DeleteOneAsync(x => x.Id == id);
     }
 }
