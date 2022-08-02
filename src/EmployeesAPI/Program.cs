@@ -14,8 +14,6 @@ builder.Services.AddSingleton<IEmployeeMongoDbSettings>(
 builder.Services.AddScoped<MemberService>();
 builder.Services.AddScoped<OrganizationService>();
 
-builder.Services.AddControllers();
-
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
@@ -28,6 +26,19 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-app.MapControllers();
+
+app.MapGet("/api/organization/{organizationId}/members",
+    (MemberService service, string organizationId) =>
+        service.GetByOrganization(organizationId)
+);
+
+app.MapGet("/members",
+    async (MemberService service) =>
+        await service.GetAsync()
+);
+
+app.MapGet("/organizations",
+    async (OrganizationService service) =>
+        await service.GetAsync());
 
 app.Run();
