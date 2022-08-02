@@ -5,14 +5,18 @@ using Microsoft.AspNetCore.Mvc;
 namespace EmployeesAPI.Controllers
 {
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("api/organizations")]
     public class OrganizationsController : ControllerBase
     {
         private readonly OrganizationService _organizationService;
         private readonly MemberService _memberService;
 
-        public OrganizationsController(OrganizationService organizationService) =>
+        public OrganizationsController(OrganizationService organizationService, MemberService memberService)
+        {
             _organizationService = organizationService;
+            _memberService = memberService;
+        }
+
 
         [HttpGet]
         public async Task<List<Organization>> Get()
@@ -21,8 +25,8 @@ namespace EmployeesAPI.Controllers
         }
 
 
-        [HttpGet("{organizationId}")]
-        public async Task<List<Member>> GetMembers(string id) =>
-            await _memberService.GetByOrganization(id);
+        [HttpGet("{organizationId}/members")]
+        public async Task<List<Member>> GetMembers(string organizationId) =>
+            await _memberService.GetByOrganization(organizationId);
     }
 }
