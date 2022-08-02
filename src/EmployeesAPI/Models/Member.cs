@@ -3,7 +3,7 @@ using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 namespace EmployeesAPI.Models
 {
-    public class Employee
+    public class Member
     {
         [BsonId]
         [BsonRepresentation(BsonType.ObjectId)]
@@ -17,5 +17,7 @@ namespace EmployeesAPI.Models
         [BsonElement("Age")]
         [JsonPropertyName("Age")]
         public int Age { get; set; }
+        [BsonElement("OrganizationId")]
+        public string OrganizationId { get; set; }
     }
 }
