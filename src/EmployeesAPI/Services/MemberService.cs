@@ -25,5 +25,17 @@ namespace EmployeesAPI.Services
 
         public async Task<List<Member>> GetByOrganization(string id)
             => await _memberCollection.Find(_ => _.OrganizationId == id).ToListAsync();
+
+        public async Task<Member> GetById(string id) =>
+            await _memberCollection.Find(m => m.Id == id).FirstOrDefaultAsync();
+
+        public async Task CreateAsync(Member newMember) =>
+            await _memberCollection.InsertOneAsync(newMember);
+
+        public async Task RemoveAsync(string id) =>
+            await _memberCollection.DeleteOneAsync(m => m.Id == id);
+
+        public async Task UpdateAsync(string id, Member updMember) =>
+            await _memberCollection.ReplaceOneAsync(x => x.Id == id, updMember);
     }
 }
