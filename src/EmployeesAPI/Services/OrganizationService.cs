@@ -25,12 +25,26 @@ namespace EmployeesAPI.Services
         public async Task<List<Organization>> GetAsync() =>
             await _organizationCollection.Find(_ => true).ToListAsync();
 
-        //TODO СДЕЛАТЬ ПРОВЕРКУ НА NULL И ВОЗВРАЩАТЬ BADREQUEST'ы т.п
-        public async Task<Organization> GetById(string id) =>
-            await _organizationCollection.Find(o => o.Id == id).FirstOrDefaultAsync();
+        public async Task<IResult> GetById(string id)
+        {
+            var organization = await _organizationCollection.Find(
+                o => o.Id == id).FirstOrDefaultAsync();
 
-        public async Task CreateAsync(Organization newOrganization) =>
+            return organization != null ? Results.Ok(organization) : Results.NotFound();
+        }
+
+
+
+
+        public async Task<IResult> CreateAsync(Organization newOrganization)
+        {
+            if (string.IsNullOrEmpty(newOrganization.Name))
+                return Results.BadRequest();
+
             await _organizationCollection.InsertOneAsync(newOrganization);
+            return Results.Ok();
+        }
+
 
         public async Task RemoveAsync(string id) =>
             await _organizationCollection.DeleteOneAsync(o => o.Id == id);
