@@ -1,8 +1,6 @@
-﻿using EmployeesAPI.Interfaces;
-
-namespace EmployeesAPI.Models
+﻿namespace EmployeesAPI.Interfaces
 {
-    public class EmployeeMongoDbSettings : IEmployeeMongoDbSettings
+    public interface IEmployeeMongoDbSettings
     {
         public string ConnectionString { get; set; }
 
