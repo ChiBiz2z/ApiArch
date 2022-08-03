@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace EmployeesAPI.Organizations.CreateOrganization
+namespace EmployeesAPI.Organizations.OrganizationRequests
 {
     public class UpdateOrganizationRequest
     {
