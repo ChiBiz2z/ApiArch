@@ -1,6 +1,10 @@
-using EmployeesAPI.Interfaces;
+using EmployeesAPI.DAL.Interfaces;
+using EmployeesAPI.DAL.Repositories;
+using EmployeesAPI.Members;
+using EmployeesAPI.Members.MemberRequests;
 using EmployeesAPI.Models;
-using EmployeesAPI.Services;
+using EmployeesAPI.Organizations;
+using EmployeesAPI.Organizations.OrganizationRequests;
 using Microsoft.Extensions.Options;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -13,6 +17,8 @@ builder.Services.AddSingleton<IEmployeeMongoDbSettings>(
 
 builder.Services.AddScoped<MemberService>();
 builder.Services.AddScoped<OrganizationService>();
+builder.Services.AddScoped<OrganizationRepository>();
+builder.Services.AddScoped<MemberRepository>();
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -28,51 +34,66 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 //Member
-app.MapGet("/api/organization/{organizationId}/members",
-    (MemberService service, string organizationId) =>
-        service.GetByOrganization(organizationId)
-).WithTags("Members");
+// app.MapGet("/api/organization/{organizationId}/members",
+//     (MemberService service, string organizationId) =>
+//         service.GetByOrganization(organizationId)
+// ).WithTags("Members");
+//
+// app.MapGet("/members",
+//     async (MemberService service) =>
+//         await service.GetAsync()
+// ).WithTags("Members");
 
-app.MapGet("/members",
-    async (MemberService service) =>
-        await service.GetAsync()
-).WithTags("Members");
+// app.MapGet("/members/{id}",
+//     async (MemberService service, string id) =>
+//         await service.GetById(id)).WithTags("Members");
+//
+// app.MapDelete("/members/{id}",
+//     async (MemberService service, string id) =>
+//         await service.RemoveAsync(id)).WithTags("Members");
+//
+app.MapPost("/members/",
+    async (MemberService service, CreateMemberRequest request) =>
+        await service.CreateAsync(request)).WithTags("Members");
 
-app.MapGet("/members/{id}",
-    async (MemberService service, string id) =>
-        await service.GetById(id)).WithTags("Members");
+app.MapPut("/members/{id}",
+    async (MemberService service, string id, UpdateMemberRequest request) =>
+    {
+        request.Key = id;
+        await service.UpdateAsync(request);
+    }).WithTags("Members");
 
-app.MapDelete("/members/remove/{id}",
-    async (MemberService service, string id) =>
-        await service.RemoveAsync(id)).WithTags("Members");
-
-app.MapPost("/members/add/",
-    async (MemberService service, Member member) =>
-        await service.CreateAsync(member)).WithTags("Members");
-
-app.MapPut("/members/update/{id}",
-    async (MemberService service, string id, Member member) =>
-        await service.UpdateAsync(id, member)).WithTags("Members");
 
 //Organization
-app.MapGet("/organizations",
-    async (OrganizationService service) =>
-        await service.GetAsync()).WithTags("Organization");
+//app.MapGet("/organizations",
+//    async (OrganizationService service) =>
+//        await service.GetAsync()).WithTags("Organization");
 
 app.MapGet("/organizations/{id}",
     async (OrganizationService service, string id) =>
-        await service.GetById(id)).WithTags("Organization");
+    {
+        var request = new GetOrganizationRequest
+        {
+            Key = id
+        };
+        return await service.GetById(request);
+    }).WithTags("Organization");
+        
 
-app.MapDelete("/organizations/remove/{id}",
-    async (OrganizationService service, string id) =>
-        await service.RemoveAsync(id)).WithTags("Organization");
+//app.MapDelete("/organizations/{id}",
+//    async (OrganizationService service, string id) =>
+//        await service.RemoveAsync(id)).WithTags("Organization");
 
-app.MapPost("/organizations/add/",
-    async (OrganizationService service, Organization organization) =>
-        await service.CreateAsync(organization)).WithTags("Organization");
+app.MapPost("/organizations/",
+    async (OrganizationService service, CreateOrganizationRequest request) =>
+        await service.CreateAsync(request)).WithTags("Organization");
 
-app.MapPut("/organizations/update/{id}",
-    async (OrganizationService service, string id, Organization organization) =>
-        await service.UpdateAsync(id, organization)).WithTags("Organization");
+app.MapPut("/organizations/{id}",
+    async (OrganizationService service, string id, UpdateOrganizationRequest request) =>
+    {
+        request.Key = id;
+        await service.UpdateAsync(request);
+    }).WithTags("Organization");
+
 
 app.Run();
