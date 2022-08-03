@@ -46,7 +46,19 @@ namespace EmployeesAPI.Members
         // public async Task RemoveAsync(string id) =>
         //     await _memberCollection.DeleteOneAsync(m => m.Id == id);
         //
-        // public async Task UpdateAsync(string id, Member updMember) =>
-        //     await _memberCollection.ReplaceOneAsync(x => x.Id == id, updMember);
+        public async Task<IResult> UpdateAsync(UpdateMemberRequest request)
+        {
+            var member = new Member(
+                request.Key,
+                request.Name,
+                request.Surname,
+                request.Age,
+                request.OrganizationKey
+            );
+
+            var res = await _repository.Update(member);
+
+            return res ? Results.Ok(member) : Results.BadRequest();
+        }
     }
 }
