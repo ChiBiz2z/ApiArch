@@ -47,10 +47,16 @@ namespace EmployeesAPI.DAL.Repositories
             return true;
         }
 
-        public async Task<OrganizationDataBaseModel> GetById(string key)
-        {
-            return await _organizationCollection.Find(o => o.Key == key).FirstOrDefaultAsync();
-        }
+        public async Task<OrganizationDataBaseModel> GetById(string key) =>
+            await _organizationCollection.Find(
+                o => o.Key == key).FirstOrDefaultAsync();
 
+        public async Task<bool> Delete(string key)
+        {
+            var delete = Builders<OrganizationDataBaseModel>.Filter.Eq(
+                x => x.Key, key);
+            await _organizationCollection.DeleteOneAsync(delete);
+            return true;
+        }
     }
 }

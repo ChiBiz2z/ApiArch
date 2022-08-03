@@ -78,11 +78,18 @@ app.MapGet("/organizations/{id}",
         };
         return await service.GetById(request);
     }).WithTags("Organization");
-        
 
-//app.MapDelete("/organizations/{id}",
-//    async (OrganizationService service, string id) =>
-//        await service.RemoveAsync(id)).WithTags("Organization");
+
+app.MapDelete("/organizations/{id}",
+    async (OrganizationService service, string id) =>
+    {
+        var request = new DeleteOrganizationRequest
+        {
+            Key = id
+        };
+        
+        return await service.RemoveAsync(request);
+    }).WithTags("Organization");
 
 app.MapPost("/organizations/",
     async (OrganizationService service, CreateOrganizationRequest request) =>

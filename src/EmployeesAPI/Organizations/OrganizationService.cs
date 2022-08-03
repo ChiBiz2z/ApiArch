@@ -44,5 +44,11 @@ namespace EmployeesAPI.Organizations
             var res = await _repository.Update(organisation);
             return res ? Results.Ok(organisation) : Results.BadRequest();
         }
+
+        public async Task<IResult> RemoveAsync(DeleteOrganizationRequest request)
+        {
+            var res = await  _repository.Delete(request.Key);
+            return res ? Results.Ok() : Results.BadRequest();
+        }
     }
 }
