@@ -19,15 +19,6 @@
             OrganizationKey = organizationKey;
         }
 
-        public Member(string key, string name, string organizationKey)
-        {
-            Validator(name, organizationKey);
-
-            Key = key;
-            Name = name;
-            OrganizationKey = organizationKey;
-        }
-
         public Member(string name, string surname, int age, string organizationKey)
         {
             Validator(name, organizationKey);

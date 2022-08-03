@@ -12,7 +12,7 @@
                 throw new ArgumentNullException("Имя организации не валидно");
             }
 
-            if (!Guid.TryParse(key, out var _))
+            if (!Guid.TryParse(key, out _))
             {
                 throw new ArgumentNullException("Ключ организации не валидно");
             }
