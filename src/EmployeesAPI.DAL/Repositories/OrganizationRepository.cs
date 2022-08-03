@@ -8,16 +8,9 @@ namespace EmployeesAPI.DAL.Repositories
     {
         private readonly IMongoCollection<OrganizationDataBaseModel> _organizationCollection;
 
-        public OrganizationRepository(IEmployeeMongoDbSettings settings)
+        public OrganizationRepository(IMongoCollection<OrganizationDataBaseModel> collection)
         {
-            var mongoClient = new MongoClient(
-                settings.ConnectionString);
-
-            var mongoDatabase = mongoClient.GetDatabase(
-                settings.DatabaseName);
-
-            _organizationCollection = mongoDatabase.GetCollection<OrganizationDataBaseModel>(
-                settings.OrganizationCollectionName);
+            _organizationCollection = collection;
         }
 
         public async Task<bool> Create(Organization organization)

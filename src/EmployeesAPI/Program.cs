@@ -1,3 +1,4 @@
+using EmployeesAPI.Configuration;
 using EmployeesAPI.DAL.Interfaces;
 using EmployeesAPI.DAL.Repositories;
 using EmployeesAPI.Members;
@@ -9,19 +10,11 @@ using Microsoft.Extensions.Options;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.Configure<EmployeeMongoDbSettings>(
-    builder.Configuration.GetSection(nameof(EmployeeMongoDbSettings)));
-
-builder.Services.AddSingleton<IEmployeeMongoDbSettings>(
-    provider => provider.GetRequiredService<IOptions<EmployeeMongoDbSettings>>().Value);
 
 builder.Services.AddScoped<MemberService>();
 builder.Services.AddScoped<OrganizationService>();
-builder.Services.AddScoped<OrganizationRepository>();
-builder.Services.AddScoped<MemberRepository>();
 
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.ConfigureSwagger().MongoDbConfiguration(builder.Configuration);
 
 var app = builder.Build();
 
@@ -80,43 +73,9 @@ app.MapPut("/members/{id}",
     }).WithTags("Members");
 
 
-//Organization
-//app.MapGet("/organizations",
-//    async (OrganizationService service) =>
-//        await service.GetAsync()).WithTags("Organization");
+var basePrefix = "/api";
+var organizationPrefix = "/organizations";
 
-app.MapGet("/organizations/{id}",
-    async (OrganizationService service, string id) =>
-    {
-        var request = new GetOrganizationRequest
-        {
-            Key = id
-        };
-        return await service.GetById(request);
-    }).WithTags("Organization");
-
-
-app.MapDelete("/organizations/{id}",
-    async (OrganizationService service, string id) =>
-    {
-        var request = new DeleteOrganizationRequest
-        {
-            Key = id
-        };
-
-        return await service.RemoveAsync(request);
-    }).WithTags("Organization");
-
-app.MapPost("/organizations/",
-    async (OrganizationService service, CreateOrganizationRequest request) =>
-        await service.CreateAsync(request)).WithTags("Organization");
-
-app.MapPut("/organizations/{id}",
-    async (OrganizationService service, string id, UpdateOrganizationRequest request) =>
-    {
-        request.Key = id;
-        await service.UpdateAsync(request);
-    }).WithTags("Organization");
-
+app.MapOrganizationEndpoints($"{basePrefix}{organizationPrefix}");
 
 app.Run();

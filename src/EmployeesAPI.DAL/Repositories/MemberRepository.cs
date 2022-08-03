@@ -8,16 +8,9 @@ public class MemberRepository
 {
     private readonly IMongoCollection<MemberDataBaseModel> _memberCollection;
 
-    public MemberRepository(IEmployeeMongoDbSettings settings)
+    public MemberRepository(IMongoCollection<MemberDataBaseModel> collection)
     {
-        var mongoClient = new MongoClient(
-            settings.ConnectionString);
-
-        var mongoDatabase = mongoClient.GetDatabase(
-            settings.DatabaseName);
-
-        _memberCollection = mongoDatabase.GetCollection<MemberDataBaseModel>(
-            settings.MembersCollectionName);
+        _memberCollection = collection;
     }
 
     public async Task<bool> Create(Member member)
@@ -63,7 +56,7 @@ public class MemberRepository
         await _memberCollection.DeleteOneAsync(delete);
         return true;
     }
-    
+
 
     public async Task<MemberDataBaseModel> GetById(string key) =>
         await _memberCollection.Find(
