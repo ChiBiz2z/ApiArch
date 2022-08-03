@@ -1,4 +1,4 @@
-﻿namespace EmployeesAPI.Interfaces
+﻿namespace EmployeesAPI.DAL.Interfaces
 {
     public interface IEmployeeMongoDbSettings
     {
