@@ -1,4 +1,4 @@
-﻿using EmployeesAPI.Interfaces;
+﻿using EmployeesAPI.DAL.Interfaces;
 
 namespace EmployeesAPI.Models
 {
