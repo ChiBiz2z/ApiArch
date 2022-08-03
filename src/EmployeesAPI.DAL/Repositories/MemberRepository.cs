@@ -56,6 +56,15 @@ public class MemberRepository
         return true;
     }
 
+    public async Task<bool> Delete(string key)
+    {
+        var delete = Builders<MemberDataBaseModel>.Filter.Eq(
+            x => x.Key, key);
+        await _memberCollection.DeleteOneAsync(delete);
+        return true;
+    }
+    
+
     public async Task<MemberDataBaseModel> GetById(string key) =>
         await _memberCollection.Find(
             m => m.Key == key).FirstOrDefaultAsync();

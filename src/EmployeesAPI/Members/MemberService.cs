@@ -1,6 +1,7 @@
 ﻿using EmployeesAPI.DAL.Repositories;
 using EmployeesAPI.Domain;
 using EmployeesAPI.Members.MemberRequests;
+using EmployeesAPI.Organizations.OrganizationRequests;
 
 namespace EmployeesAPI.Members
 {
@@ -53,9 +54,12 @@ namespace EmployeesAPI.Members
         }
 
 
-        // public async Task RemoveAsync(string id) =>
-        //     await _memberCollection.DeleteOneAsync(m => m.Id == id);
-        //
+        public async Task<IResult> RemoveAsync(DeleteMemberRequest request)
+        {
+            var res = await _repository.Delete(request.Key);
+            return res ? Results.Ok() : Results.BadRequest();
+        }
+
         public async Task<IResult> UpdateAsync(UpdateMemberRequest request)
         {
             var member = new Member(

@@ -44,14 +44,30 @@ app.UseHttpsRedirection();
 //         await service.GetAsync()
 // ).WithTags("Members");
 
-// app.MapGet("/members/{id}",
-//     async (MemberService service, string id) =>
-//         await service.GetById(id)).WithTags("Members");
 //
-// app.MapDelete("/members/{id}",
-//     async (MemberService service, string id) =>
-//         await service.RemoveAsync(id)).WithTags("Members");
-//
+app.MapDelete("/members/{id}",
+    async (MemberService service, string id) =>
+    {
+        var request = new DeleteMemberRequest
+        {
+            Key = id
+        };
+
+        return await service.RemoveAsync(request);
+    }).WithTags("Members");
+
+
+app.MapGet("/members/{id}",
+    async (MemberService service, string id) =>
+    {
+        var request = new GetMemberRequest
+        {
+            Key = id
+        };
+
+        return await service.GetById(request);
+    }).WithTags("Members");
+
 app.MapPost("/members/",
     async (MemberService service, CreateMemberRequest request) =>
         await service.CreateAsync(request)).WithTags("Members");
@@ -87,7 +103,7 @@ app.MapDelete("/organizations/{id}",
         {
             Key = id
         };
-        
+
         return await service.RemoveAsync(request);
     }).WithTags("Organization");
 
