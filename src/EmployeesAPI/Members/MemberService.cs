@@ -19,13 +19,23 @@ namespace EmployeesAPI.Members
         // public async Task<List<Member>> GetByOrganization(string id)
         //     => await _memberCollection.Find(_ => _.OrganizationKey == id).ToListAsync();
         //
-        // public async Task<IResult> GetById(string id)
-        // {
-        //     var member = await _memberCollection.Find(
-        //         o => o.Id == id).FirstOrDefaultAsync();
-        //
-        //     return member != null ? Results.Ok(member) : Results.NotFound();
-        // }
+        public async Task<IResult> GetById(GetMemberRequest request)
+        {
+            var model = await _repository.GetById(request.Key);
+            if (model == null)
+                return Results.NotFound();
+
+            var response = new MemberViewModel
+            {
+                Key = model.Key,
+                Name = model.Name,
+                Surname = model.Surname,
+                Age = model.Age,
+                OrganizationKey = model.OrganizationKey
+            };
+            
+            return Results.Ok(response);
+        }
 
         public async Task<IResult> CreateAsync(CreateMemberRequest request)
         {

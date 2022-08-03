@@ -6,7 +6,7 @@
         public string Name { get; }
         public string Surname { get; }
         public int Age { get; }
-        public string OrganizationKey { get; } //Id или Key?
+        public string OrganizationKey { get; }
 
         public Member(string key, string name, string surname, int age, string organizationKey)
         {

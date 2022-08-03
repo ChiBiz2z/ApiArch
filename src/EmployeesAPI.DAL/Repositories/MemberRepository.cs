@@ -46,7 +46,7 @@ public class MemberRepository
         };
 
         var update = Builders<MemberDataBaseModel>.Update.Set(
-            x => x.Name, dataBaseModel.Name)
+                x => x.Name, dataBaseModel.Name)
             .Set(x => x.Surname, dataBaseModel.Surname)
             .Set(x => x.Age, dataBaseModel.Age)
             .Set(x => x.OrganizationKey, dataBaseModel.OrganizationKey);
@@ -55,4 +55,8 @@ public class MemberRepository
             o => o.Key == dataBaseModel.Key, update);
         return true;
     }
+
+    public async Task<MemberDataBaseModel> GetById(string key) =>
+        await _memberCollection.Find(
+            m => m.Key == key).FirstOrDefaultAsync();
 }
