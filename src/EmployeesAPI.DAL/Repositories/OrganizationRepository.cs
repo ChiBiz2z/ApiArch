@@ -46,5 +46,11 @@ namespace EmployeesAPI.DAL.Repositories
 
             return true;
         }
+
+        public async Task<OrganizationDataBaseModel> GetById(string key)
+        {
+            return await _organizationCollection.Find(o => o.Key == key).FirstOrDefaultAsync();
+        }
+
     }
 }

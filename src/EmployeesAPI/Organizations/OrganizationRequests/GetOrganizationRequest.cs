@@ -1,6 +1,6 @@
 ﻿namespace EmployeesAPI.Organizations.OrganizationRequests;
 
-public class GetOrganisationRequest
+public class GetOrganizationRequest
 {
     public string Key { get; set; }
 }

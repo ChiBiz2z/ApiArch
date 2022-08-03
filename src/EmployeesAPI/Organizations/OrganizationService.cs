@@ -1,7 +1,6 @@
 ﻿using EmployeesAPI.DAL.Repositories;
 using EmployeesAPI.Domain;
-using EmployeesAPI.Organizations.CreateOrganization;
-using Microsoft.AspNetCore.Mvc;
+using EmployeesAPI.Organizations.OrganizationRequests;
 
 namespace EmployeesAPI.Organizations
 {
@@ -13,17 +12,21 @@ namespace EmployeesAPI.Organizations
         {
             _repository = repository;
         }
+        
+        public async Task<IResult> GetById(GetOrganizationRequest request)
+        {
+            var model = await _repository.GetById(request.Key);
+            if (model == null)
+                return Results.NotFound();
 
-        //public async Task<List<Organization>> GetAsync() =>
-        //    await _organizationCollection.Find(_ => true).ToListAsync();
+            var response = new OrganizationViewModel
+            {
+                Key = model.Key,
+                Name = model.Name
+            };
 
-        //public async Task<IResult> GetById(string id)
-        //{
-        //    var organization = await _organizationCollection.Find(
-        //        o => o.Id == id).FirstOrDefaultAsync();
-
-        //    return organization != null ? Results.Ok(organization) : Results.NotFound();
-        //}
+            return Results.Ok(response);
+        }
 
         public async Task<IResult> CreateAsync(CreateOrganizationRequest request)
         {
@@ -33,10 +36,6 @@ namespace EmployeesAPI.Organizations
             var res = await _repository.Create(organization);
             return res ? Results.Ok(organization) : Results.BadRequest();
         }
-
-
-        //public async Task RemoveAsync(string id) =>
-        //    await _organizationCollection.DeleteOneAsync(o => o.Id == id);
 
         public async Task<IResult> UpdateAsync(UpdateOrganizationRequest request)
         {
