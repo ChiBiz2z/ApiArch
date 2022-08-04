@@ -11,7 +11,7 @@
         public Member(string key, string name, string surname, int age, string organizationKey)
         {
             Validator(name, organizationKey);
-            
+
             Key = key;
             Name = name;
             Surname = surname;
@@ -19,15 +19,9 @@
             OrganizationKey = organizationKey;
         }
 
-        public Member(string name, string surname, int age, string organizationKey)
+        public Member(string name, string surname, int age, string organizationKey) :
+            this(Guid.NewGuid().ToString(), name, surname, age, organizationKey)
         {
-            Validator(name, organizationKey);
-            
-            Name = name;
-            Surname = surname;
-            Age = age;
-            OrganizationKey = organizationKey;
-            Key = Guid.NewGuid().ToString();
         }
 
         private void Validator(string name, string key)

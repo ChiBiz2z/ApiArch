@@ -16,18 +16,13 @@
             {
                 throw new ArgumentNullException("Ключ организации не валидно");
             }
+
             Key = key;
             Name = name;
         }
 
-        public Organization(string name)
+        public Organization(string name) : this(Guid.NewGuid().ToString(), name)
         {
-            if (string.IsNullOrEmpty(name))
-            {
-                throw new ArgumentNullException("Имя организации не валидно");
-            }
-            Key = Guid.NewGuid().ToString();
-            Name = name;
         }
     }
 }
