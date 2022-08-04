@@ -19,6 +19,7 @@
   <ItemGroup>
     <Compile Remove="Services\**" />
     <Compile Remove="Models\Member.cs" />
+    <Compile Remove="Members\MemberRequests\GetMembersByOrganizationIdRequest.cs" />
   </ItemGroup>
 
   <ItemGroup>
