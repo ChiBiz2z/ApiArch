@@ -1,5 +1,4 @@
-﻿using EmployeesAPI.DAL.Interfaces;
-using EmployeesAPI.Domain;
+﻿using EmployeesAPI.Domain;
 using MongoDB.Driver;
 
 namespace EmployeesAPI.DAL.Repositories
@@ -51,5 +50,14 @@ namespace EmployeesAPI.DAL.Repositories
             await _organizationCollection.DeleteOneAsync(delete);
             return true;
         }
+        
+        public async Task<bool> ContainsName(string name) =>
+            await _organizationCollection.Find(x => x.Name == name).AnyAsync();
+
+
+        // public async Task<bool> ContainsBy<TProperty>(Expression<Func<TProperty, bool>> condition, CancellationToken token = default)
+        // {
+        //    return await _organizationCollection.AsQueryable().AnyAsync(condition, token);
+        // }
     }
 }

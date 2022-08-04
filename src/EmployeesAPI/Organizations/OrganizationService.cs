@@ -30,7 +30,9 @@ namespace EmployeesAPI.Organizations
 
         public async Task<IResult> CreateAsync(CreateOrganizationRequest request)
         {
-            //TODO проверка на существующее имя
+            if (await _repository.ContainsName(request.Name))
+                return Results.BadRequest();
+            
             var organization = new Organization(request.Name);
 
             var res = await _repository.Create(organization);
