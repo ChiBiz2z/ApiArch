@@ -10,7 +10,7 @@ public static class OrganizationEndPoints
         {
             return app;
         }
-        
+
         app.MapGet("/organizations/{id}",
             async (OrganizationService service, string id) =>
             {
