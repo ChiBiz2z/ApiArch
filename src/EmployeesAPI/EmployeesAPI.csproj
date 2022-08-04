@@ -1,0 +1,37 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="MongoDB.Driver" Version="2.17.1" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.2.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\EmployeesAPI.DAL\EmployeesAPI.DAL.csproj" />
+    <ProjectReference Include="..\EmployeesAPI.Domain\EmployeesAPI.Domain.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="Services\**" />
+    <Compile Remove="Models\Member.cs" />
+    <Compile Remove="Members\MemberRequests\GetMembersByOrganizationIdRequest.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Remove="Services\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="Services\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Remove="Services\**" />
+  </ItemGroup>
+
+</Project>
