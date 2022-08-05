@@ -20,7 +20,8 @@ public static class ConfigureMongoDb
 
         services.AddScoped<OrganizationRepository>();
         services.AddScoped<MemberRepository>();
-
+        services.AddScoped<UserRepository>();
+        
         var mongoOptions = manager
             .GetSection(nameof(EmployeeMongoDbSettings))
             .Get<EmployeeMongoDbSettings>();
@@ -37,9 +38,12 @@ public static class ConfigureMongoDb
         var memberCollection = mongoDatabase.GetCollection<MemberDataBaseModel>(
             mongoOptions.MembersCollectionName);
 
+        var userCollection = mongoDatabase.GetCollection<UserDataBaseModel>(
+            mongoOptions.UsersCollectionName);
+        
         services.AddSingleton(organizationCollection);
         services.AddSingleton(memberCollection);
-
+        services.AddSingleton(userCollection);
         return services;
     }
 }
