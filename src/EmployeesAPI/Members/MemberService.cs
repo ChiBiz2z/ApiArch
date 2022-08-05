@@ -14,12 +14,6 @@ namespace EmployeesAPI.Members
             _repository = repository;
         }
 
-        // public async Task<List<Member>> GetAsync() =>
-        //     await _memberCollection.Find(_ => true).ToListAsync();
-
-        // public async Task<List<Member>> GetByOrganization(string id)
-        //     => await _memberCollection.Find(_ => _.OrganizationKey == id).ToListAsync();
-        //
         public async Task<IResult> GetById(GetMemberRequest request)
         {
             var model = await _repository.GetById(request.Key);
@@ -34,19 +28,18 @@ namespace EmployeesAPI.Members
                 Age = model.Age,
                 OrganizationKey = model.OrganizationKey
             };
-            
+
             return Results.Ok(response);
         }
 
         public async Task<IResult> CreateAsync(CreateMemberRequest request)
         {
-            //TODO
             var member = new Member(
                 request.Name,
                 request.Surname,
                 request.Age,
                 request.OrganizationKey
-                );
+            );
 
             var res = await _repository.Create(member);
 
