@@ -10,12 +10,12 @@ public static class AccountEndPoints
             return app;
 
         app.MapPost("/account/register/",
-            (UserService service, RegisterUserRequest request) => 
-                service.Register(request)).WithTags("Account");
+            async (UserService service, RegisterUserRequest request) =>
+                await service.Register(request)).WithTags("Account");
 
-        app.MapPost("/account/login/",
-            (UserService service, LoginUserRequest request) => 
-                Results.Ok()).WithTags("Account");
+        app.MapPost("/account/signin/",
+            async (UserService service, SignInUserRequest request) =>
+                await service.SignIn(request)).WithTags("Account");
 
         return app;
     }

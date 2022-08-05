@@ -6,17 +6,27 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace EmployeesAPI.Infrastructure;
 
-public class SecurityService
+public static class SecurityService
 {
     public static (string passwordHash, string passwordSalt) HashString(string value, string key = "")
     {
         HMACSHA512 hmac = new HMACSHA512();
 
         if (string.IsNullOrEmpty(key))
-            key = Convert.ToBase64String(hmac.Key);
+            key = Convert.ToHexString(hmac.Key);
 
         var hashBytes = hmac.ComputeHash(Encoding.UTF8.GetBytes(value));
-        return (Convert.ToBase64String(hashBytes), key);
+        return (Convert.ToHexString(hashBytes), key);
+    }
+
+    public static bool VerifyPasswordHash(string inputPassword, string passwordHash, string passwordSalt)
+    {
+        var saltBytes = Convert.FromHexString(passwordSalt);
+
+        using var hmac = new HMACSHA512(saltBytes);
+        var computedHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(inputPassword));
+
+        return Convert.ToHexString(computedHash).Equals(passwordHash);
     }
 
     public static string GenerateJwtToken(string key, string issuer, string audience, string userId,

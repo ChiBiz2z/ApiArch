@@ -34,11 +34,30 @@ public class UserService
             _jwtSettings.Key,
             _jwtSettings.Issuer,
             _jwtSettings.Audience,
-            user.Key, 
+            user.Key,
             user.OrganizationId);
-        
+
         var res = await _repository.Create(user);
-        
+
         return res ? Results.Ok(new JwtResponse(token)) : Results.BadRequest();
+    }
+
+    public async Task<IResult> SignIn(SignInUserRequest request)
+    {
+        var user = await _repository.FindByEmail(request.Email);
+        if (user == null)
+            return Results.BadRequest();
+
+        if (!SecurityService.VerifyPasswordHash( request.Password, user.PasswordHash, user.PasswordKey))
+            return Results.BadRequest();
+
+        var token = SecurityService.GenerateJwtToken(
+            _jwtSettings.Key,
+            _jwtSettings.Issuer,
+            _jwtSettings.Audience,
+            user.Key,
+            user.OrganizationId);
+
+        return Results.Ok(new JwtResponse(token));
     }
 }

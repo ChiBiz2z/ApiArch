@@ -28,4 +28,7 @@ public class UserRepository
         await _userCollection.InsertOneAsync(dataBaseModel);
         return true;
     }
+
+    public async Task<UserDataBaseModel> FindByEmail(string email) =>
+        await _userCollection.Find(x => x.Email == email).FirstOrDefaultAsync();
 }
