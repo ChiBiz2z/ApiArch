@@ -5,6 +5,7 @@ using EmployeesAPI.Members;
 using EmployeesAPI.Models;
 using EmployeesAPI.Organizations;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -36,6 +37,15 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         };
     });
 
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy(
+        "Default",
+        policy =>
+        {
+            policy.RequireClaim("organizationId");
+        });
+});
 
 var app = builder.Build();
 
@@ -51,7 +61,7 @@ var basePrefix = "/api";
 var organizationPrefix = "/organizations";
 
 app.UseAuthentication();
-//app.UseAuthorization();
+app.UseAuthorization();
 
 app.MapOrganizationEndpoints($"{basePrefix}{organizationPrefix}");
 app.MapMemberEndpoints($"{basePrefix}");
