@@ -12,5 +12,6 @@ namespace EmployeesAPI.Models
 
         public string MembersCollectionName { get; set; }
         public string UsersCollectionName { get; set; }
+        public string VerificationCodesCollectionName { get; set; }
     }
 }

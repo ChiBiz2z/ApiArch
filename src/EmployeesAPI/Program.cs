@@ -14,6 +14,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddScoped<MemberService>();
 builder.Services.AddScoped<OrganizationService>();
 builder.Services.AddScoped<UserService>();
+builder.Services.AddScoped<VerificationCodeService>();
 
 builder.Services.ConfigureSwagger()
     .MongoDbConfiguration(builder.Configuration);
@@ -33,7 +34,8 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ValidateLifetime = true,
             ValidIssuer = builder.Configuration["JwtSettings:Issuer"],
             ValidAudience = builder.Configuration["JwtSettings:Audience"],
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JwtSettings:Key"]))
+            IssuerSigningKey =
+                new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JwtSettings:Key"]))
         };
     });
 
@@ -41,10 +43,7 @@ builder.Services.AddAuthorization(options =>
 {
     options.AddPolicy(
         "Default",
-        policy =>
-        {
-            policy.RequireClaim("organizationId");
-        });
+        policy => { policy.RequireClaim("organizationId"); });
 });
 
 var app = builder.Build();
@@ -66,5 +65,4 @@ app.UseAuthorization();
 app.MapOrganizationEndpoints($"{basePrefix}{organizationPrefix}");
 app.MapMemberEndpoints($"{basePrefix}");
 app.MapAccountEndpoints($"{basePrefix}");
-
 app.Run();

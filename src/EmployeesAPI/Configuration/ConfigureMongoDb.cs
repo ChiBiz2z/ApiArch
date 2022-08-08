@@ -9,7 +9,7 @@ namespace EmployeesAPI.Configuration;
 
 public static class ConfigureMongoDb
 {
-    public static IServiceCollection MongoDbConfiguration(this IServiceCollection services,
+    public static void MongoDbConfiguration(this IServiceCollection services,
         ConfigurationManager manager)
     {
         services.Configure<EmployeeMongoDbSettings>(
@@ -21,7 +21,8 @@ public static class ConfigureMongoDb
         services.AddScoped<OrganizationRepository>();
         services.AddScoped<MemberRepository>();
         services.AddScoped<UserRepository>();
-        
+        services.AddScoped<VerificationCodeRepository>();
+
         var mongoOptions = manager
             .GetSection(nameof(EmployeeMongoDbSettings))
             .Get<EmployeeMongoDbSettings>();
@@ -40,10 +41,13 @@ public static class ConfigureMongoDb
 
         var userCollection = mongoDatabase.GetCollection<UserDataBaseModel>(
             mongoOptions.UsersCollectionName);
-        
+
+        var verificationCodesCollection = mongoDatabase.GetCollection<VerificationCodeDataBaseModel>(
+            mongoOptions.VerificationCodesCollectionName);
+
         services.AddSingleton(organizationCollection);
         services.AddSingleton(memberCollection);
         services.AddSingleton(userCollection);
-        return services;
+        services.AddSingleton(verificationCodesCollection);
     }
 }
