@@ -22,12 +22,13 @@ public class UserService
     public async Task<IResult> Register(RegisterUserRequest request)
     {
         var hash = SecurityService.HashString(request.Password);
-        //TODO проверка на существующую почту
+
+        if (await _repository.ContainsEmail(request.Email))
+            return Results.BadRequest();
+        
         var user = new User(
             request.Email,
-            hash.passwordHash,
-            "Organizationid",
-            hash.passwordSalt
+            request.OrganizationId
         );
 
         var token = SecurityService.GenerateJwtToken(
@@ -37,7 +38,7 @@ public class UserService
             user.Key,
             user.OrganizationId);
 
-        var res = await _repository.Create(user);
+        var res = await _repository.Create(user, hash.passwordHash, hash.passwordSalt);
 
         return res ? Results.Ok(new JwtResponse(token)) : Results.BadRequest();
     }
@@ -48,7 +49,7 @@ public class UserService
         if (user == null)
             return Results.BadRequest();
 
-        if (!SecurityService.VerifyPasswordHash( request.Password, user.PasswordHash, user.PasswordKey))
+        if (!SecurityService.VerifyPasswordHash(request.Password, user.PasswordHash, user.PasswordKey))
             return Results.BadRequest();
 
         var token = SecurityService.GenerateJwtToken(

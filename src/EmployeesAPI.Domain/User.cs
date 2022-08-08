@@ -1,20 +1,29 @@
-﻿namespace EmployeesAPI.Domain;
+﻿using System.Text.RegularExpressions;
+
+namespace EmployeesAPI.Domain;
 
 public class User
 {
     public string Key { get; }
     public string Email { get; }
-    public string PasswordHash { get; }
-    public string PasswordKey { get; }
     public DateTime CreatedAt { get; }
     public string OrganizationId { get; }
 
-    public User(string email, string passwordHash, string organizationId, string passwordKey)
+
+    private const string EmailRegex =
+        @"\A(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?)\Z";
+
+    public User(string email, string organizationId)
     {
+        if (!Regex.IsMatch(email.ToLower(), EmailRegex))
+            throw new ArgumentNullException("Email не валиден");
+
+        if (!Guid.TryParse(organizationId, out _))
+            throw new ArgumentNullException("Id организации сотрудника не валиден");
+
+
         Email = email;
-        PasswordHash = passwordHash;
-        OrganizationId = organizationId ?? "OrganizationId";
-        PasswordKey = passwordKey;
+        OrganizationId = organizationId;
         CreatedAt = DateTime.Now;
         Key = Guid.NewGuid().ToString();
     }

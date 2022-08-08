@@ -53,11 +53,5 @@ namespace EmployeesAPI.DAL.Repositories
         
         public async Task<bool> ContainsName(string name) =>
             await _organizationCollection.Find(x => x.Name == name).AnyAsync();
-
-
-        // public async Task<bool> ContainsBy<TProperty>(Expression<Func<TProperty, bool>> condition, CancellationToken token = default)
-        // {
-        //    return await _organizationCollection.AsQueryable().AnyAsync(condition, token);
-        // }
     }
 }

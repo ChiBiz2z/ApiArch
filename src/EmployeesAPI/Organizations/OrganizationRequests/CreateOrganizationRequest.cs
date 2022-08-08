@@ -6,5 +6,9 @@ namespace EmployeesAPI.Organizations.OrganizationRequests
     {
         [Required]
         public string Name { get; set; }
+
+        public string DefaultUserEmail { get; set; }
+
+        public string DefaultUserPassword { get; set; }
     }
 }
