@@ -1,15 +1,24 @@
 using System.Text;
+using System.Text.RegularExpressions;
 using EmployeesAPI.Account;
 using EmployeesAPI.Configuration;
 using EmployeesAPI.Members;
 using EmployeesAPI.Models;
 using EmployeesAPI.Organizations;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.IdentityModel.Tokens;
+using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 
+Log.Logger = new LoggerConfiguration()
+    .WriteTo.Console(outputTemplate:
+        "[{Timestamp:HH:mm:ss} {Level:u3}] {Message:lj}{NewLine}{Exception}")
+    .WriteTo.Seq("http://localhost:5341")
+    .CreateBootstrapLogger();
+
+
+builder.Host.UseSerilog();
 
 builder.Services.AddScoped<MemberService>();
 builder.Services.AddScoped<OrganizationService>();
@@ -46,23 +55,36 @@ builder.Services.AddAuthorization(options =>
         policy => { policy.RequireClaim("organizationId"); });
 });
 
-var app = builder.Build();
-
-if (app.Environment.IsDevelopment())
+try
 {
-    app.UseSwagger();
-    app.UseSwaggerUI();
+    var app = builder.Build();
+
+    if (app.Environment.IsDevelopment())
+    {
+        app.UseSwagger();
+        app.UseSwaggerUI();
+    }
+
+    app.UseHttpsRedirection();
+
+    var basePrefix = "/api";
+    var organizationPrefix = "/organizations";
+
+    app.UseAuthentication();
+    app.UseAuthorization();
+
+    app.MapOrganizationEndpoints($"{basePrefix}{organizationPrefix}");
+    app.MapMemberEndpoints($"{basePrefix}");
+    app.MapAccountEndpoints($"{basePrefix}");
+    app.Run();
+    return 0;
 }
-
-app.UseHttpsRedirection();
-
-var basePrefix = "/api";
-var organizationPrefix = "/organizations";
-
-app.UseAuthentication();
-app.UseAuthorization();
-
-app.MapOrganizationEndpoints($"{basePrefix}{organizationPrefix}");
-app.MapMemberEndpoints($"{basePrefix}");
-app.MapAccountEndpoints($"{basePrefix}");
-app.Run();
+catch (Exception ex)
+{
+    Log.Fatal(ex, "Host terminated unexpectedly");
+    return 1;
+}
+finally
+{
+    Log.CloseAndFlush();
+}
