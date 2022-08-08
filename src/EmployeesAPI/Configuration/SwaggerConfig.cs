@@ -13,10 +13,38 @@ public static class SwaggerConfig
 {
     public static IServiceCollection ConfigureSwagger(this IServiceCollection services)
     {
+        var securityReq = new OpenApiSecurityRequirement()
+        {
+            {
+                new OpenApiSecurityScheme
+                {
+                    Reference = new OpenApiReference
+                    {
+                        Type = ReferenceType.SecurityScheme,
+                        Id = "Bearer"
+                    }
+                },
+                new string[] { }
+            }
+        };
+
+        var securityScheme = new OpenApiSecurityScheme
+        {
+            Type = SecuritySchemeType.ApiKey,
+            Name = "Authorization",
+            In = ParameterLocation.Header,
+            Description = "Type into the textbox: Bearer {your JWT token}.",
+        };
+
         services.AddEndpointsApiExplorer();
+
         services.AddSwaggerGen(
-            x => x.SchemaFilter<SchemaFilter>()
-        );
+            x =>
+            {
+                x.SchemaFilter<SchemaFilter>();
+                x.AddSecurityRequirement(securityReq);
+                x.AddSecurityDefinition("Bearer", securityScheme);
+            });
         return services;
     }
 

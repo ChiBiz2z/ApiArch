@@ -1,4 +1,6 @@
-﻿using EmployeesAPI.DAL.Repositories;
+﻿using EmployeesAPI.Account;
+using EmployeesAPI.Account.AccountsRequests;
+using EmployeesAPI.DAL.Repositories;
 using EmployeesAPI.Domain;
 using EmployeesAPI.Organizations.OrganizationRequests;
 
@@ -7,12 +9,14 @@ namespace EmployeesAPI.Organizations
     public class OrganizationService
     {
         private readonly OrganizationRepository _repository;
+        private readonly UserService _userService;
 
-        public OrganizationService(OrganizationRepository repository)
+        public OrganizationService(OrganizationRepository repository, UserService userService)
         {
             _repository = repository;
+            _userService = userService;
         }
-        
+
         public async Task<IResult> GetById(GetOrganizationRequest request)
         {
             var model = await _repository.GetById(request.Key);
@@ -32,10 +36,39 @@ namespace EmployeesAPI.Organizations
         {
             if (await _repository.ContainsName(request.Name))
                 return Results.BadRequest();
-            
+
+
             var organization = new Organization(request.Name);
 
+            var user = new User(
+                request.DefaultUserEmail,
+                organization.Key
+            );
+
             var res = await _repository.Create(organization);
+
+            try
+            {
+                await _userService.Register(new RegisterUserRequest
+                {
+                    Email = user.Email,
+                    Password = request.DefaultUserPassword,
+                    OrganizationId = user.OrganizationId
+                });
+            }
+            catch (Exception e)
+            {
+                try
+                {
+                    await _repository.Delete(organization.Key);
+                }
+                catch (Exception exception)
+                {
+                    Console.WriteLine($"Organization with key {organization.Key} has been created without User!");
+                }
+            }
+
+
             return res ? Results.Ok(organization) : Results.BadRequest();
         }
 
@@ -49,7 +82,7 @@ namespace EmployeesAPI.Organizations
 
         public async Task<IResult> RemoveAsync(DeleteOrganizationRequest request)
         {
-            var res = await  _repository.Delete(request.Key);
+            var res = await _repository.Delete(request.Key);
             return res ? Results.Ok() : Results.BadRequest();
         }
     }
