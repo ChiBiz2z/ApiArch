@@ -1,4 +1,5 @@
 ﻿using EmployeesAPI.Organizations.OrganizationRequests;
+using Microsoft.AspNetCore.Authorization;
 
 namespace EmployeesAPI.Organizations;
 
@@ -23,6 +24,7 @@ public static class OrganizationEndPoints
 
 
         app.MapDelete("/organizations/{id}",
+            [Authorize]
             async (OrganizationService service, string id) =>
             {
                 var request = new DeleteOrganizationRequest
@@ -34,14 +36,16 @@ public static class OrganizationEndPoints
             }).WithTags("Organization");
 
         app.MapPost("/organizations/",
+            [Authorize]
             async (OrganizationService service, CreateOrganizationRequest request) =>
                 await service.CreateAsync(request)).WithTags("Organization");
 
         app.MapPut("/organizations/{id}",
+            [Authorize]
             async (OrganizationService service, string id, UpdateOrganizationRequest request) =>
             {
                 request.Key = id;
-                await service.UpdateAsync(request);
+                return await service.UpdateAsync(request);
             }).WithTags("Organization");
 
         return app;

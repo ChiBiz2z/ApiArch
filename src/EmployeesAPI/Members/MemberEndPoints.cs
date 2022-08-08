@@ -11,7 +11,7 @@ public static class MemberEndPoints
             return app;
 
         app.MapDelete("/members/{id}",
-            async (MemberService service, string id) =>
+            [Authorize] async (MemberService service, string id) =>
             {
                 var request = new DeleteMemberRequest
                 {
@@ -34,7 +34,7 @@ public static class MemberEndPoints
             }).WithTags("Members");
 
         app.MapPost("/members/",
-            async (MemberService service, CreateMemberRequest request) =>
+            [Authorize] async (MemberService service, CreateMemberRequest request) =>
                 await service.CreateAsync(request)).WithTags("Members");
 
         app.MapPut("/members/{id}",
