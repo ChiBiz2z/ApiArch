@@ -1,4 +1,5 @@
-﻿using MongoDB.Bson;
+﻿using EmployeesAPI.Domain.Enums;
+using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 
 namespace EmployeesAPI.DAL;
@@ -14,4 +15,5 @@ public class UserDataBaseModel
     public string PasswordKey { get; set;}
     public DateTime CreatedAt { get; set;}
     public string OrganizationId { get; set;}
+    public EmailStatus Status { get; set; }
 }

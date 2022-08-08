@@ -17,6 +17,9 @@ public static class AccountEndPoints
             async (UserService service, SignInUserRequest request) =>
                 await service.SignIn(request)).WithTags("Account");
 
+        app.MapPost("/account/emailconfirm/",
+            async (UserService service, ConfirmUserEmailRequest request) =>
+                await service.ConfirmEmail(request)).WithTags("Account");
         return app;
     }
 }

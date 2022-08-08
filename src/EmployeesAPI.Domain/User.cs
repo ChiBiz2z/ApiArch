@@ -1,4 +1,5 @@
 ﻿using System.Text.RegularExpressions;
+using EmployeesAPI.Domain.Enums;
 
 namespace EmployeesAPI.Domain;
 
@@ -8,7 +9,7 @@ public class User
     public string Email { get; }
     public DateTime CreatedAt { get; }
     public string OrganizationId { get; }
-
+    public EmailStatus Status { get; }
 
     private const string EmailRegex =
         @"\A(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?)\Z";
@@ -25,6 +26,7 @@ public class User
         Email = email;
         OrganizationId = organizationId;
         CreatedAt = DateTime.Now;
+        Status = EmailStatus.PendingVerification;
         Key = Guid.NewGuid().ToString();
     }
 }

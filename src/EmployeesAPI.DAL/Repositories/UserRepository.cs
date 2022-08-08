@@ -22,7 +22,8 @@ public class UserRepository
             PasswordHash = passwordHash,
             PasswordKey = passwordSalt,
             CreatedAt = user.CreatedAt,
-            OrganizationId = user.OrganizationId
+            OrganizationId = user.OrganizationId,
+            Status = user.Status
         };
 
         await _userCollection.InsertOneAsync(dataBaseModel);
