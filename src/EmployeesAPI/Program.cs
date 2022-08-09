@@ -1,5 +1,4 @@
 using System.Text;
-using System.Text.RegularExpressions;
 using EmployeesAPI.Account;
 using EmployeesAPI.Configuration;
 using EmployeesAPI.Members;
@@ -16,7 +15,6 @@ Log.Logger = new LoggerConfiguration()
         "[{Timestamp:HH:mm:ss} {Level:u3}] {Message:lj}{NewLine}{Exception}")
     .WriteTo.Seq("http://localhost:5341")
     .CreateBootstrapLogger();
-
 
 builder.Host.UseSerilog();
 
@@ -67,6 +65,8 @@ try
 
     app.UseHttpsRedirection();
 
+    app.UseMiddlewareLogging();
+    
     var basePrefix = "/api";
     var organizationPrefix = "/organizations";
 
