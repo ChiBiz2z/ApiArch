@@ -1,6 +1,7 @@
 using System.Text;
 using EmployeesAPI.Account;
 using EmployeesAPI.Configuration;
+using EmployeesAPI.Errors;
 using EmployeesAPI.Members;
 using EmployeesAPI.Models;
 using EmployeesAPI.Organizations;
@@ -63,10 +64,12 @@ try
         app.UseSwaggerUI();
     }
 
-    app.UseHttpsRedirection();
-
-    app.UseMiddlewareLogging();
+    app.UseExceptionHandler(e
+        => e.CustomErrors(app.Environment));
     
+    app.UseHttpsRedirection();
+    app.UseMiddlewareLogging();
+
     var basePrefix = "/api";
     var organizationPrefix = "/organizations";
 

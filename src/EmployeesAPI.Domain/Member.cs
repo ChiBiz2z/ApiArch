@@ -28,13 +28,13 @@
         private void Validator(string name, string key, int age)
         {
             if (string.IsNullOrEmpty(name))
-                throw new ArgumentNullException("Имя сотрудника не валидно");
+                throw new DomainException("Имя сотрудника не валидно");
 
             if (!Guid.TryParse(key, out _))
-                throw new ArgumentNullException("Id организации сотрудника не валиден");
+                throw new DomainException("Id организации сотрудника не валиден");
 
             if (age < 16 || age > 99)
-                throw new ArgumentOutOfRangeException("Возраст должен быть больше 16 и меньше 99");
+                throw new DomainException("Возраст должен быть больше 16 и меньше 99");
         }
     }
 }
