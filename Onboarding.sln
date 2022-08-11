@@ -5,13 +5,15 @@ VisualStudioVersion = 17.2.32505.173
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EmployeesAPI", "src\EmployeesAPI\EmployeesAPI.csproj", "{B206B9C9-5333-444A-9224-A55CB71B94CD}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EmployeesAPI.DAL", "src\EmployeesAPI.DAL\EmployeesAPI.DAL.csproj", "{55B2E296-5B16-4272-9AF7-185746FF666D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EmployeesAPI.DAL", "src\EmployeesAPI.DAL\EmployeesAPI.DAL.csproj", "{55B2E296-5B16-4272-9AF7-185746FF666D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EmployeesAPI.Domain", "src\EmployeesAPI.Domain\EmployeesAPI.Domain.csproj", "{1F542E7D-626C-4825-9B4F-9E4CD2441872}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EmployeesAPI.Domain", "src\EmployeesAPI.Domain\EmployeesAPI.Domain.csproj", "{1F542E7D-626C-4825-9B4F-9E4CD2441872}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EmployeeAPI.Tests", "tests\EmployeeAPI.Tests\EmployeeAPI.Tests.csproj", "{571C8E49-4F2C-424F-9212-48064BF0EAFD}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EmployeeAPI.Tests", "tests\EmployeeAPI.Tests\EmployeeAPI.Tests.csproj", "{571C8E49-4F2C-424F-9212-48064BF0EAFD}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EmployeesAPI.Infrastructure", "src\EmployeesAPI.Infrastructure\EmployeesAPI.Infrastructure.csproj", "{A7A72D01-1907-494E-B0AE-E3329582A439}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EmployeesAPI.Infrastructure", "src\EmployeesAPI.Infrastructure\EmployeesAPI.Infrastructure.csproj", "{A7A72D01-1907-494E-B0AE-E3329582A439}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EmployeeAPI.IntegrationTests", "tests\EmployeeAPI.IntegrationTests\EmployeeAPI.IntegrationTests.csproj", "{0D38440B-7CDA-45C0-B859-2766E305FD93}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -39,6 +41,10 @@ Global
 		{A7A72D01-1907-494E-B0AE-E3329582A439}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A7A72D01-1907-494E-B0AE-E3329582A439}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A7A72D01-1907-494E-B0AE-E3329582A439}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0D38440B-7CDA-45C0-B859-2766E305FD93}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0D38440B-7CDA-45C0-B859-2766E305FD93}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0D38440B-7CDA-45C0-B859-2766E305FD93}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0D38440B-7CDA-45C0-B859-2766E305FD93}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

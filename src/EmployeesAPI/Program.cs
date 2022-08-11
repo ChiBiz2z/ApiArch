@@ -1,7 +1,9 @@
 using System.Text;
 using EmployeesAPI.Account;
 using EmployeesAPI.Configuration;
+using EmployeesAPI.Domain;
 using EmployeesAPI.Errors;
+using EmployeesAPI.Infrastructure;
 using EmployeesAPI.Members;
 using EmployeesAPI.Models;
 using EmployeesAPI.Organizations;
@@ -23,6 +25,9 @@ builder.Services.AddScoped<MemberService>();
 builder.Services.AddScoped<OrganizationService>();
 builder.Services.AddScoped<UserService>();
 builder.Services.AddScoped<VerificationCodeService>();
+builder.Services.AddScoped<SendVerificationEmail>(_ =>
+    (email, code) => EmailService.SendEmail(email, code).IsSuccessful
+);
 
 builder.Services.ConfigureSwagger()
     .MongoDbConfiguration(builder.Configuration);
@@ -57,7 +62,6 @@ builder.Services.AddAuthorization(options =>
 try
 {
     var app = builder.Build();
-
     if (app.Environment.IsDevelopment())
     {
         app.UseSwagger();
@@ -66,7 +70,7 @@ try
 
     app.UseExceptionHandler(e
         => e.CustomErrors(app.Environment));
-    
+
     app.UseHttpsRedirection();
     app.UseMiddlewareLogging();
 
@@ -76,6 +80,7 @@ try
     app.UseAuthentication();
     app.UseAuthorization();
 
+    app.DataSeed(args);
     app.MapOrganizationEndpoints($"{basePrefix}{organizationPrefix}");
     app.MapMemberEndpoints($"{basePrefix}");
     app.MapAccountEndpoints($"{basePrefix}");
@@ -90,4 +95,8 @@ catch (Exception ex)
 finally
 {
     Log.CloseAndFlush();
+}
+
+public partial class Program
+{
 }

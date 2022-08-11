@@ -1,3 +1,9 @@
-﻿namespace EmployeesAPI.Account;
+﻿using System.Text.Json.Serialization;
 
-public record JwtResponse(string Token);
+namespace EmployeesAPI.Account;
+
+public record JwtResponse
+{
+    [JsonPropertyName("token")]
+    public string Token { get; set; }
+};
