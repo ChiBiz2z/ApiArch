@@ -5,11 +5,11 @@ namespace EmployeesAPI.Organizations;
 
 public static class OrganizationEndPoints
 {
-    public static WebApplication? MapOrganizationEndpoints(this WebApplication? app, string prefix)
+    public static void MapOrganizationEndpoints(this WebApplication? app, string prefix)
     {
         if (app == null)
         {
-            return app;
+            return;
         }
 
         app.MapGet("/organizations/{id}",
@@ -22,10 +22,20 @@ public static class OrganizationEndPoints
                 return await service.GetById(request);
             }).WithTags("Organization");
 
+        app.MapGet("/organizations/search",
+            async (OrganizationService service, string? search, int? pageNumber, int? pageSize) =>
+            {
+                var request = new GetManyOrganizationsRequest
+                {
+                    Search = search,
+                    PageNumber = pageNumber,
+                    PageSize = pageSize
+                };
+                return await service.GetOrganizations(request);
+            }).WithTags("Organization");
 
         app.MapDelete("/organizations/{id}",
-            [Authorize]
-            async (OrganizationService service, string id) =>
+            [Authorize] async (OrganizationService service, string id) =>
             {
                 var request = new DeleteOrganizationRequest
                 {
@@ -36,18 +46,14 @@ public static class OrganizationEndPoints
             }).WithTags("Organization");
 
         app.MapPost("/organizations/",
-            [Authorize]
-            async (OrganizationService service, CreateOrganizationRequest request) =>
+            [Authorize] async (OrganizationService service, CreateOrganizationRequest request) =>
                 await service.CreateAsync(request)).WithTags("Organization");
 
         app.MapPut("/organizations/{id}",
-            [Authorize]
-            async (OrganizationService service, string id, UpdateOrganizationRequest request) =>
+            [Authorize] async (OrganizationService service, string id, UpdateOrganizationRequest request) =>
             {
                 request.Key = id;
                 return await service.UpdateAsync(request);
             }).WithTags("Organization");
-
-        return app;
     }
 }

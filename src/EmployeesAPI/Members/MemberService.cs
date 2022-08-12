@@ -1,7 +1,6 @@
 ﻿using EmployeesAPI.DAL.Repositories;
 using EmployeesAPI.Domain;
 using EmployeesAPI.Members.MemberRequests;
-using EmployeesAPI.Organizations.OrganizationRequests;
 
 namespace EmployeesAPI.Members
 {
@@ -29,6 +28,28 @@ namespace EmployeesAPI.Members
                 OrganizationKey = model.OrganizationKey
             };
 
+            return Results.Ok(response);
+        }
+
+        public async Task<IResult> GetMembers(GetManyMembersRequest request)
+        {
+            var members = await _repository.GetAll(request.FullNameSearch, (int)request.AgeFilterFrom, (int)request.AgeFilterTo, (int)request.PageNumber, (int)request.PageSize);
+            if(members == null || !members.Any())
+                return Results.BadRequest();
+
+            var response = new List<MemberViewModel>();
+            foreach (var member in members)
+            {
+                response.Add(new MemberViewModel
+                {
+                    Age = member.Age,
+                    Name = member.Name,
+                    OrganizationKey = member.OrganizationKey,
+                    Key = member.Key,
+                    Surname = member.Surname
+                });
+            }
+            
             return Results.Ok(response);
         }
 

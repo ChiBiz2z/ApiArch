@@ -15,12 +15,14 @@ public class UserService
     private readonly UserRepository _repository;
     private readonly VerificationCodeService _verificationCodeService;
     private readonly JwtSettings _jwtSettings;
+    private readonly ILogger<UserService> _logger;
 
     public UserService(UserRepository repository, IOptions<JwtSettings> options,
-        VerificationCodeService verificationCodeService)
+        VerificationCodeService verificationCodeService, ILogger<UserService> logger)
     {
         _repository = repository;
         _verificationCodeService = verificationCodeService;
+        _logger = logger;
         _jwtSettings = options.Value;
     }
 
@@ -36,9 +38,9 @@ public class UserService
             request.OrganizationId
         );
         var res = await _repository.Create(user, hash.passwordHash, hash.passwordSalt);
-        if(res == false)
+        if (res == false)
             return Results.BadRequest();
-        
+
         res = await _verificationCodeService.CreateAsync(user.Email);
 
         return res ? Results.Ok("Confirm email") : Results.BadRequest();
@@ -60,6 +62,7 @@ public class UserService
             user.Key,
             user.OrganizationId);
 
+        _logger.LogInformation("The user {@user} has signed in", user);
         return Results.Ok(new JwtResponse(token));
     }
 

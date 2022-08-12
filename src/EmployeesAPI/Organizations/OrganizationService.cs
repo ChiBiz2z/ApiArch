@@ -32,6 +32,27 @@ namespace EmployeesAPI.Organizations
             return Results.Ok(response);
         }
 
+        public async Task<IResult> GetOrganizations(GetManyOrganizationsRequest request)
+        {
+            var organizations =
+                await _repository.GetAll(request.Search, (int)request.PageNumber, (int)request.PageSize);
+            
+            if (organizations == null || !organizations.Any())
+                return Results.BadRequest();
+
+            var response = new List<OrganizationViewModel>();
+            foreach (var organization in organizations)
+            {
+                response.Add(new OrganizationViewModel
+                {
+                    Key = organization.Key,
+                    Name = organization.Name
+                });
+            }
+
+            return Results.Ok(response);
+        }
+
         public async Task<IResult> CreateAsync(CreateOrganizationRequest request)
         {
             if (await _repository.ContainsName(request.Name))

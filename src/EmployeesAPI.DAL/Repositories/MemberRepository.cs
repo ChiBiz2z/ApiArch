@@ -1,6 +1,9 @@
-﻿using EmployeesAPI.DAL.Interfaces;
+﻿using System.Linq.Expressions;
+using EmployeesAPI.DAL.Interfaces;
 using EmployeesAPI.Domain;
+using MongoDB.Bson;
 using MongoDB.Driver;
+using MongoDB.Driver.Linq;
 
 namespace EmployeesAPI.DAL.Repositories;
 
@@ -61,4 +64,22 @@ public class MemberRepository
     public async Task<MemberDataBaseModel> GetById(string key) =>
         await _memberCollection.Find(
             m => m.Key == key).FirstOrDefaultAsync();
+
+    public async Task<List<MemberDataBaseModel>> GetAll(string name, int ageFrom, int ageTo, int pageNumber,
+        int pageSize)
+    {
+        Expression<Func<MemberDataBaseModel, bool>> filter = string.IsNullOrEmpty(name)
+            ? x => x.Age >= ageFrom && x.Age <= ageTo
+            : x =>
+                (x.Name.ToLower().Contains(name.ToLower()) || x.Surname.ToLower().Contains(name.ToLower())) &&
+                x.Age >= ageFrom &&
+                x.Age <= ageTo;
+
+        var memberDataBaseModels = await _memberCollection.AsQueryable()
+            .Where(filter)
+            .Skip((pageNumber - 1) * pageSize)
+            .Take(pageSize).ToListAsync();
+
+        return memberDataBaseModels;
+    }
 }

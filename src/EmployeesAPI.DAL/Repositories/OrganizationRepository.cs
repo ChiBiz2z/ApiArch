@@ -1,5 +1,7 @@
 ﻿using EmployeesAPI.Domain;
 using MongoDB.Driver;
+using MongoDB.Driver.Linq;
+using System.Linq.Expressions;
 
 namespace EmployeesAPI.DAL.Repositories
 {
@@ -43,6 +45,20 @@ namespace EmployeesAPI.DAL.Repositories
             await _organizationCollection.Find(
                 o => o.Key == key).FirstOrDefaultAsync();
 
+        public async Task<List<OrganizationDataBaseModel>> GetAll(string search, int pageNumber, int pageSize)
+        {
+            Expression<Func<OrganizationDataBaseModel, bool>> filter = string.IsNullOrEmpty(search)
+                ? _ => true
+                : x => x.Name.ToLower().Contains(search.ToLower());
+
+            var organizationDataBaseModels = await _organizationCollection.AsQueryable()
+                .Where(filter)
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize).ToListAsync();
+
+            return organizationDataBaseModels;
+        }
+
         public async Task<bool> Delete(string key)
         {
             var delete = Builders<OrganizationDataBaseModel>.Filter.Eq(
@@ -50,7 +66,7 @@ namespace EmployeesAPI.DAL.Repositories
             await _organizationCollection.DeleteOneAsync(delete);
             return true;
         }
-        
+
         public async Task<bool> ContainsName(string name) =>
             await _organizationCollection.Find(x => x.Name == name).AnyAsync();
     }

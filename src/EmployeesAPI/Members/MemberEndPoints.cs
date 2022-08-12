@@ -5,10 +5,9 @@ namespace EmployeesAPI.Members;
 
 public static class MemberEndPoints
 {
-    public static WebApplication? MapMemberEndpoints(this WebApplication? app, string prefix)
+    public static void MapMemberEndpoints(this WebApplication? app, string prefix)
     {
-        if (app == null)
-            return app;
+        if (app == null) return;
 
         app.MapDelete("/members/{id}",
             [Authorize] async (MemberService service, string id) =>
@@ -33,6 +32,21 @@ public static class MemberEndPoints
                 return await service.GetById(request);
             }).WithTags("Members");
 
+        app.MapGet("/members/search",
+            async (MemberService service, string? name, int? ageFrom, int? ageTo, int? pageNumber, int? pageSize) =>
+            {
+                var request = new GetManyMembersRequest
+                {
+                    FullNameSearch = name,
+                    AgeFilterFrom = ageFrom,
+                    AgeFilterTo = ageTo,
+                    PageNumber = pageNumber,
+                    PageSize = pageSize
+                };
+
+                return await service.GetMembers(request);
+            }).WithTags("Members");
+
         app.MapPost("/members/",
             [Authorize] async (MemberService service, CreateMemberRequest request) =>
                 await service.CreateAsync(request)).WithTags("Members");
@@ -43,8 +57,5 @@ public static class MemberEndPoints
                 request.Key = id;
                 await service.UpdateAsync(request);
             }).WithTags("Members");
-
-
-        return app;
     }
 }

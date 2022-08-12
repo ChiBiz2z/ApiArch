@@ -9,12 +9,12 @@
         {
             if (string.IsNullOrEmpty(name))
             {
-                throw new ArgumentNullException("Имя организации не валидно");
+                throw new DomainException("Имя организации не валидно");
             }
 
             if (!Guid.TryParse(key, out _))
             {
-                throw new ArgumentNullException("Ключ организации не валидно");
+                throw new DomainException("Ключ организации не валидно");
             }
 
             Key = key;
