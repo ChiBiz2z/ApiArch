@@ -8,14 +8,20 @@ using EmployeesAPI.Domain;
 using EmployeesAPI.Domain.Enums;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
 using MongoDB.Driver;
 using Xunit;
 
 namespace EmployeeAPI.IntegrationTests;
 
-public class OrganizationServiceTests
+public class AccountSignInAndRegisterTests : IClassFixture<DataBaseFixture>
 {
+    private DataBaseFixture _database;
+
+    public AccountSignInAndRegisterTests(DataBaseFixture database)
+    {
+        _database = database;
+    }
+    
     [Fact]
     public async Task SignIn_WorksForExistedAccount_Test()
     {
@@ -42,7 +48,7 @@ public class OrganizationServiceTests
     }
 
     [Fact]
-    public async Task SignInShouldReturnNotFoundForNotExistedAccount_Test()
+    public async Task SignIn_ShouldReturnNotFoundForNotExistedAccount_Test()
     {
         //Assign
         var application = new WebApplicationFactory<Program>().WithWebHostBuilder(builder => { });
@@ -63,7 +69,7 @@ public class OrganizationServiceTests
     }
 
     [Fact]
-    public async Task SignInShouldReturnNotFoundForWrongPassword_Test()
+    public async Task SignIn_ShouldReturnNotFoundForWrongPassword_Test()
     {
         //Assign
         var application = new WebApplicationFactory<Program>().WithWebHostBuilder(builder => { });
@@ -84,7 +90,7 @@ public class OrganizationServiceTests
     }
 
     [Fact]
-    public async Task CheckSignUpLogic()
+    public async Task CheckSignUpLogic_Test()
     {
         var application = new WebApplicationFactory<Program>().WithWebHostBuilder(builder =>
         {

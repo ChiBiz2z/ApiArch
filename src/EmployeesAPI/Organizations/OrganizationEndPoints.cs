@@ -8,9 +8,8 @@ public static class OrganizationEndPoints
     public static void MapOrganizationEndpoints(this WebApplication? app, string prefix)
     {
         if (app == null)
-        {
             return;
-        }
+
 
         app.MapGet("/organizations/{id}",
             async (OrganizationService service, string id) =>
