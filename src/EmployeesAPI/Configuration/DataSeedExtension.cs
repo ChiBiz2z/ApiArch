@@ -19,12 +19,12 @@ public static class DataSeedExtension
 
 
         var testOrganization = new Faker<OrganizationDataBaseModel>()
-            .RuleFor(o => o.Key, Guid.NewGuid().ToString)
+            .RuleFor(o => o.Key, f => f.Random.Guid().ToString())
             .RuleFor(o => o.Name, f => f.Company.CompanyName());
         var organizationCollection = testOrganization.Generate(10);
 
         var testMember = new Faker<MemberDataBaseModel>()
-            .RuleFor(m => m.Key, Guid.NewGuid().ToString)
+            .RuleFor(m => m.Key, f => f.Random.Guid().ToString())
             .RuleFor(m => m.Name, f => f.Person.FirstName)
             .RuleFor(m => m.Surname, f => f.Person.LastName)
             .RuleFor(m => m.Age, f => f.Random.Number(18, 99))

@@ -17,50 +17,22 @@ using Xunit;
 
 namespace EmployeeAPI.IntegrationTests;
 
-public class OrganizationTests : IClassFixture<DataBaseFixture>
+[Collection("AppFixture")]
+public class OrganizationTests
 {
-    private readonly DataBaseFixture _fixture;
-
-    public OrganizationTests(DataBaseFixture fixture)
+    private WebAppFixture _fixture;
+    public OrganizationTests(WebAppFixture fixture)
     {
         _fixture = fixture;
     }
-
 
     //?
     [Fact]
     public async Task OrganizationShouldBeFoundById_Test()
     {
-        var application = new WebApplicationFactory<Program>().WithWebHostBuilder(builder =>
-        {
-            builder.ConfigureServices(services =>
-            {
-                var oldDbConfig = services.SingleOrDefault(s =>
-                    s.ServiceType == typeof(IEmployeeMongoDbSettings));
-
-                if (oldDbConfig != null)
-                    services.Remove(oldDbConfig);
-                //TODO ???????????
-                services.AddSingleton<IEmployeeMongoDbSettings>(
-                    provider => provider.GetRequiredService<IOptions<EmployeeMongoDbSettings>>().Value);
-            });
-        });
-
-        var client = application.CreateClient();
-        
-        var request = new GetOrganizationRequest
-        {
-            Key = "61825ee4-4def-4c61-a2dd-c0016bec895e"
-        };
-
-        var content = new StringContent(System.Text.Json.JsonSerializer.Serialize(request), Encoding.UTF8)
-        {
-            Headers = { ContentType = new MediaTypeHeaderValue("application/json") }
-        };
-
-        //var response = await client.GetAsync("/organization/", content); //?
-
+        var response = await _fixture.Client.GetAsync("/organizations/61825ee4-4def-4c61-a2dd-c0016bec895e"); //?
         //Assert
+        
     }
 
     //Ok

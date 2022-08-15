@@ -10,7 +10,7 @@ namespace EmployeesAPI.Configuration;
 public static class ConfigureMongoDb
 {
     public static void MongoDbConfiguration(this IServiceCollection services,
-        ConfigurationManager manager)
+        IConfiguration manager)
     {
         services.Configure<EmployeeMongoDbSettings>(
             manager.GetSection(nameof(EmployeeMongoDbSettings)));

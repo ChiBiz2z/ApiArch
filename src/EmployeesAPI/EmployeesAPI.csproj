@@ -38,6 +38,9 @@
 
   <ItemGroup>
     <Content Remove="Services\**" />
+    <Content Update="appsettings.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 
 </Project>

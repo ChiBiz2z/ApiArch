@@ -13,15 +13,8 @@ using Xunit;
 
 namespace EmployeeAPI.IntegrationTests;
 
-public class AccountSignInAndRegisterTests : IClassFixture<DataBaseFixture>
+public class AccountSignInAndRegisterTests
 {
-    private DataBaseFixture _database;
-
-    public AccountSignInAndRegisterTests(DataBaseFixture database)
-    {
-        _database = database;
-    }
-    
     [Fact]
     public async Task SignIn_WorksForExistedAccount_Test()
     {
@@ -76,7 +69,7 @@ public class AccountSignInAndRegisterTests : IClassFixture<DataBaseFixture>
         var client = application.CreateClient();
         var request = new SignInUserRequest
         {
-            Email = "defikeaK@gmail.com",//ALWAYS CHANGE NAME
+            Email = "defikeaK@gmail.com", //ALWAYS CHANGE NAME
             Password = "wrongpassword"
         };
         var content = new StringContent(System.Text.Json.JsonSerializer.Serialize(request), Encoding.UTF8)
