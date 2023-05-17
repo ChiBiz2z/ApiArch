@@ -1,6 +1,9 @@
-﻿using EmployeesAPI.DAL.Interfaces;
+﻿using System.Linq.Expressions;
+using EmployeesAPI.DAL.Interfaces;
 using EmployeesAPI.Domain;
+using MongoDB.Bson;
 using MongoDB.Driver;
+using MongoDB.Driver.Linq;
 
 namespace EmployeesAPI.DAL.Repositories;
 
@@ -8,16 +11,9 @@ public class MemberRepository
 {
     private readonly IMongoCollection<MemberDataBaseModel> _memberCollection;
 
-    public MemberRepository(IEmployeeMongoDbSettings settings)
+    public MemberRepository(IMongoCollection<MemberDataBaseModel> collection)
     {
-        var mongoClient = new MongoClient(
-            settings.ConnectionString);
-
-        var mongoDatabase = mongoClient.GetDatabase(
-            settings.DatabaseName);
-
-        _memberCollection = mongoDatabase.GetCollection<MemberDataBaseModel>(
-            settings.MembersCollectionName);
+        _memberCollection = collection;
     }
 
     public async Task<bool> Create(Member member)
@@ -46,7 +42,7 @@ public class MemberRepository
         };
 
         var update = Builders<MemberDataBaseModel>.Update.Set(
-            x => x.Name, dataBaseModel.Name)
+                x => x.Name, dataBaseModel.Name)
             .Set(x => x.Surname, dataBaseModel.Surname)
             .Set(x => x.Age, dataBaseModel.Age)
             .Set(x => x.OrganizationKey, dataBaseModel.OrganizationKey);
@@ -54,5 +50,36 @@ public class MemberRepository
         await _memberCollection.UpdateOneAsync(
             o => o.Key == dataBaseModel.Key, update);
         return true;
+    }
+
+    public async Task<bool> Delete(string key)
+    {
+        var delete = Builders<MemberDataBaseModel>.Filter.Eq(
+            x => x.Key, key);
+        await _memberCollection.DeleteOneAsync(delete);
+        return true;
+    }
+
+
+    public async Task<MemberDataBaseModel> GetById(string key) =>
+        await _memberCollection.Find(
+            m => m.Key == key).FirstOrDefaultAsync();
+
+    public async Task<List<MemberDataBaseModel>> GetAll(string name, int ageFrom, int ageTo, int pageNumber,
+        int pageSize)
+    {
+        Expression<Func<MemberDataBaseModel, bool>> filter = string.IsNullOrEmpty(name)
+            ? x => x.Age >= ageFrom && x.Age <= ageTo
+            : x =>
+                (x.Name.ToLower().Contains(name.ToLower()) || x.Surname.ToLower().Contains(name.ToLower())) &&
+                x.Age >= ageFrom &&
+                x.Age <= ageTo;
+
+        var memberDataBaseModels = await _memberCollection.AsQueryable()
+            .Where(filter)
+            .Skip((pageNumber - 1) * pageSize)
+            .Take(pageSize).ToListAsync();
+
+        return memberDataBaseModels;
     }
 }

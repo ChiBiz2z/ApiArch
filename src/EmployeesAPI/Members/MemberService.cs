@@ -13,29 +13,54 @@ namespace EmployeesAPI.Members
             _repository = repository;
         }
 
-        // public async Task<List<Member>> GetAsync() =>
-        //     await _memberCollection.Find(_ => true).ToListAsync();
+        public async Task<IResult> GetById(GetMemberRequest request)
+        {
+            var model = await _repository.GetById(request.Key);
+            if (model == null)
+                return Results.NotFound();
 
-        // public async Task<List<Member>> GetByOrganization(string id)
-        //     => await _memberCollection.Find(_ => _.OrganizationKey == id).ToListAsync();
-        //
-        // public async Task<IResult> GetById(string id)
-        // {
-        //     var member = await _memberCollection.Find(
-        //         o => o.Id == id).FirstOrDefaultAsync();
-        //
-        //     return member != null ? Results.Ok(member) : Results.NotFound();
-        // }
+            var response = new MemberViewModel
+            {
+                Key = model.Key,
+                Name = model.Name,
+                Surname = model.Surname,
+                Age = model.Age,
+                OrganizationKey = model.OrganizationKey
+            };
+
+            return Results.Ok(response);
+        }
+
+        public async Task<IResult> GetMembers(GetManyMembersRequest request)
+        {
+            var members = await _repository.GetAll(request.FullNameSearch, (int)request.AgeFilterFrom, (int)request.AgeFilterTo, (int)request.PageNumber, (int)request.PageSize);
+            if(members == null || !members.Any())
+                return Results.BadRequest();
+
+            var response = new List<MemberViewModel>();
+            foreach (var member in members)
+            {
+                response.Add(new MemberViewModel
+                {
+                    Age = member.Age,
+                    Name = member.Name,
+                    OrganizationKey = member.OrganizationKey,
+                    Key = member.Key,
+                    Surname = member.Surname
+                });
+            }
+            
+            return Results.Ok(response);
+        }
 
         public async Task<IResult> CreateAsync(CreateMemberRequest request)
         {
-            //TODO
             var member = new Member(
                 request.Name,
                 request.Surname,
                 request.Age,
                 request.OrganizationKey
-                );
+            );
 
             var res = await _repository.Create(member);
 
@@ -43,9 +68,12 @@ namespace EmployeesAPI.Members
         }
 
 
-        // public async Task RemoveAsync(string id) =>
-        //     await _memberCollection.DeleteOneAsync(m => m.Id == id);
-        //
+        public async Task<IResult> RemoveAsync(DeleteMemberRequest request)
+        {
+            var res = await _repository.Delete(request.Key);
+            return res ? Results.Ok() : Results.BadRequest();
+        }
+
         public async Task<IResult> UpdateAsync(UpdateMemberRequest request)
         {
             var member = new Member(

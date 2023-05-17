@@ -1,106 +1,93 @@
-using EmployeesAPI.DAL.Interfaces;
-using EmployeesAPI.DAL.Repositories;
+using System.Text;
+using EmployeesAPI.Account;
+using EmployeesAPI.Configuration;
+using EmployeesAPI.Errors;
 using EmployeesAPI.Members;
-using EmployeesAPI.Members.MemberRequests;
 using EmployeesAPI.Models;
 using EmployeesAPI.Organizations;
-using EmployeesAPI.Organizations.OrganizationRequests;
-using Microsoft.Extensions.Options;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.Configure<EmployeeMongoDbSettings>(
-    builder.Configuration.GetSection(nameof(EmployeeMongoDbSettings)));
+Log.Logger = new LoggerConfiguration()
+    .WriteTo.Console(outputTemplate:
+        "[{Timestamp:HH:mm:ss} {Level:u3}] {Message:lj}{NewLine}{Exception}")
+    .WriteTo.Seq("http://localhost:5341")
+    .CreateBootstrapLogger();
 
-builder.Services.AddSingleton<IEmployeeMongoDbSettings>(
-    provider => provider.GetRequiredService<IOptions<EmployeeMongoDbSettings>>().Value);
+builder.Host.UseSerilog();
 
 builder.Services.AddScoped<MemberService>();
 builder.Services.AddScoped<OrganizationService>();
-builder.Services.AddScoped<OrganizationRepository>();
-builder.Services.AddScoped<MemberRepository>();
+builder.Services.AddScoped<UserService>();
+builder.Services.AddScoped<VerificationCodeService>();
 
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.ConfigureSwagger()
+    .MongoDbConfiguration(builder.Configuration);
 
-var app = builder.Build();
+builder.Services.Configure<JwtSettings>(
+    builder.Configuration.GetSection(nameof(JwtSettings)));
 
-if (app.Environment.IsDevelopment())
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        options.SaveToken = true;
+        options.TokenValidationParameters = new TokenValidationParameters()
+        {
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidateIssuerSigningKey = true,
+            ValidateLifetime = true,
+            ValidIssuer = builder.Configuration["JwtSettings:Issuer"],
+            ValidAudience = builder.Configuration["JwtSettings:Audience"],
+            IssuerSigningKey =
+                new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JwtSettings:Key"]))
+        };
+    });
+
+builder.Services.AddAuthorization(options =>
 {
-    app.UseSwagger();
-    app.UseSwaggerUI();
+    options.AddPolicy(
+        "Default",
+        policy => { policy.RequireClaim("organizationId"); });
+});
+
+try
+{
+    var app = builder.Build();
+
+    if (app.Environment.IsDevelopment())
+    {
+        app.UseSwagger();
+        app.UseSwaggerUI();
+    }
+
+    app.UseExceptionHandler(e
+        => e.CustomErrors(app.Environment));
+    
+    app.UseHttpsRedirection();
+    app.UseMiddlewareLogging();
+
+    var basePrefix = "/api";
+    var organizationPrefix = "/organizations";
+
+    app.UseAuthentication();
+    app.UseAuthorization();
+
+    app.MapOrganizationEndpoints($"{basePrefix}{organizationPrefix}");
+    app.MapMemberEndpoints($"{basePrefix}");
+    app.MapAccountEndpoints($"{basePrefix}");
+    app.Run();
+    return 0;
 }
-
-app.UseHttpsRedirection();
-
-//Member
-// app.MapGet("/api/organization/{organizationId}/members",
-//     (MemberService service, string organizationId) =>
-//         service.GetByOrganization(organizationId)
-// ).WithTags("Members");
-//
-// app.MapGet("/members",
-//     async (MemberService service) =>
-//         await service.GetAsync()
-// ).WithTags("Members");
-
-// app.MapGet("/members/{id}",
-//     async (MemberService service, string id) =>
-//         await service.GetById(id)).WithTags("Members");
-//
-// app.MapDelete("/members/{id}",
-//     async (MemberService service, string id) =>
-//         await service.RemoveAsync(id)).WithTags("Members");
-//
-app.MapPost("/members/",
-    async (MemberService service, CreateMemberRequest request) =>
-        await service.CreateAsync(request)).WithTags("Members");
-
-app.MapPut("/members/{id}",
-    async (MemberService service, string id, UpdateMemberRequest request) =>
-    {
-        request.Key = id;
-        await service.UpdateAsync(request);
-    }).WithTags("Members");
-
-
-//Organization
-//app.MapGet("/organizations",
-//    async (OrganizationService service) =>
-//        await service.GetAsync()).WithTags("Organization");
-
-app.MapGet("/organizations/{id}",
-    async (OrganizationService service, string id) =>
-    {
-        var request = new GetOrganizationRequest
-        {
-            Key = id
-        };
-        return await service.GetById(request);
-    }).WithTags("Organization");
-
-
-app.MapDelete("/organizations/{id}",
-    async (OrganizationService service, string id) =>
-    {
-        var request = new DeleteOrganizationRequest
-        {
-            Key = id
-        };
-        
-        return await service.RemoveAsync(request);
-    }).WithTags("Organization");
-
-app.MapPost("/organizations/",
-    async (OrganizationService service, CreateOrganizationRequest request) =>
-        await service.CreateAsync(request)).WithTags("Organization");
-
-app.MapPut("/organizations/{id}",
-    async (OrganizationService service, string id, UpdateOrganizationRequest request) =>
-    {
-        request.Key = id;
-        await service.UpdateAsync(request);
-    }).WithTags("Organization");
-
-
-app.Run();
+catch (Exception ex)
+{
+    Log.Fatal(ex, "Host terminated unexpectedly");
+    return 1;
+}
+finally
+{
+    Log.CloseAndFlush();
+}

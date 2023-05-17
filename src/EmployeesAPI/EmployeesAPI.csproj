@@ -7,18 +7,23 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="6.0.6" />
     <PackageReference Include="MongoDB.Driver" Version="2.17.1" />
+    <PackageReference Include="Serilog.AspNetCore" Version="6.0.1" />
+    <PackageReference Include="Serilog.Sinks.Seq" Version="5.1.1" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.2.3" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\EmployeesAPI.DAL\EmployeesAPI.DAL.csproj" />
     <ProjectReference Include="..\EmployeesAPI.Domain\EmployeesAPI.Domain.csproj" />
+    <ProjectReference Include="..\EmployeesAPI.Infrastructure\EmployeesAPI.Infrastructure.csproj" />
   </ItemGroup>
 
   <ItemGroup>
     <Compile Remove="Services\**" />
     <Compile Remove="Models\Member.cs" />
+    <Compile Remove="Members\MemberRequests\GetMembersByOrganizationIdRequest.cs" />
   </ItemGroup>
 
   <ItemGroup>
@@ -27,6 +32,7 @@
 
   <ItemGroup>
     <None Remove="Services\**" />
+    <None Remove="log202208081610.txt" />
   </ItemGroup>
 
   <ItemGroup>
