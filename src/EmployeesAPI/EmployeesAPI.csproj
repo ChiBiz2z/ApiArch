@@ -7,6 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Bogus" Version="34.0.2" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="6.0.6" />
     <PackageReference Include="MongoDB.Driver" Version="2.17.1" />
     <PackageReference Include="Serilog.AspNetCore" Version="6.0.1" />
@@ -37,6 +38,9 @@
 
   <ItemGroup>
     <Content Remove="Services\**" />
+    <Content Update="appsettings.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 
 </Project>

@@ -16,13 +16,15 @@ public class UserService
     private readonly VerificationCodeService _verificationCodeService;
     private readonly JwtSettings _jwtSettings;
     private readonly ILogger<UserService> _logger;
+    private readonly SendVerificationEmail _sendVerificationEmail;
 
     public UserService(UserRepository repository, IOptions<JwtSettings> options,
-        VerificationCodeService verificationCodeService, ILogger<UserService> logger)
+        VerificationCodeService verificationCodeService, ILogger<UserService> logger, SendVerificationEmail sendVerificationEmail)
     {
         _repository = repository;
         _verificationCodeService = verificationCodeService;
         _logger = logger;
+        _sendVerificationEmail = sendVerificationEmail;
         _jwtSettings = options.Value;
     }
 
@@ -41,7 +43,7 @@ public class UserService
         if (res == false)
             return Results.BadRequest();
 
-        res = await _verificationCodeService.CreateAsync(user.Email);
+        res = await _verificationCodeService.CreateAsync(user.Email, _sendVerificationEmail);
 
         return res ? Results.Ok("Confirm email") : Results.BadRequest();
     }
@@ -50,7 +52,7 @@ public class UserService
     {
         var user = await _repository.FindByEmail(request.Email);
         if (user == null)
-            return Results.BadRequest();
+            return Results.NotFound();
 
         if (!SecurityService.VerifyPasswordHash(request.Password, user.PasswordHash, user.PasswordKey))
             return Results.BadRequest();
@@ -63,7 +65,7 @@ public class UserService
             user.OrganizationId);
 
         _logger.LogInformation("The user {@user} has signed in", user);
-        return Results.Ok(new JwtResponse(token));
+        return Results.Ok(new JwtResponse { Token = token });
     }
 
     public async Task<IResult> ConfirmEmail(ConfirmUserEmailRequest request)
@@ -85,6 +87,6 @@ public class UserService
             user.Key,
             user.OrganizationId);
 
-        return Results.Ok(new JwtResponse(token));
+        return Results.Ok(new JwtResponse { Token = token} );
     }
 }

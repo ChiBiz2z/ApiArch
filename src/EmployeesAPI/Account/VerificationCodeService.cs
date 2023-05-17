@@ -17,7 +17,7 @@ public class VerificationCodeService
     }
 
 
-    public async Task<bool> CreateAsync(string email)
+    public async Task<bool> CreateAsync(string email, SendVerificationEmail sendVerificationEmail)
     {
         var verificationCode = new VerificationCode(
             email
@@ -25,8 +25,7 @@ public class VerificationCodeService
 
         var res = await _repository.Create(verificationCode);
 
-        var r = EmailService.SendEmail(email, verificationCode.Code);
-        return r.IsSuccessful;
+        return sendVerificationEmail(email, verificationCode.Code);
     }
 
     public async Task<VerificationCodeDataBaseModel> GetRecordByKey(string request)

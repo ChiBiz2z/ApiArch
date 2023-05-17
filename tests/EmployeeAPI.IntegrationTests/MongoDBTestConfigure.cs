@@ -2,18 +2,21 @@
 using EmployeesAPI.DAL.Interfaces;
 using EmployeesAPI.DAL.Repositories;
 using EmployeesAPI.Models;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using MongoDB.Driver;
 
-namespace EmployeesAPI.Configuration;
+namespace EmployeeAPI.IntegrationTests;
 
-public static class ConfigureMongoDb
+public static class MongoDbTestConfigure
 {
-    public static void MongoDbConfiguration(this IServiceCollection services,
-        IConfiguration manager)
+    public static void MongoDbConfigurationTests(this IServiceCollection services,
+        ConfigurationManager manager)
     {
         services.Configure<EmployeeMongoDbSettings>(
-            manager.GetSection(nameof(EmployeeMongoDbSettings)));
+            manager.GetSection("EmployeeMongoDbSettingsTest"));
 
         services.AddSingleton<IEmployeeMongoDbSettings>(
             provider => provider.GetRequiredService<IOptions<EmployeeMongoDbSettings>>().Value);
